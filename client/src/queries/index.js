@@ -12,3 +12,20 @@ export const GET_ALL_QUERIES = gql`
     }
   }
 `;
+
+
+export const SIGNUP_USER = gql`
+  mutation(
+    $username: String!,
+    $email: String!,
+    $password: String!
+  ) {
+    signupUser(
+      username: $username,
+      email: $email,
+      password: $password
+    ) {
+      token
+    }
+  }
+`;
