@@ -47,3 +47,7 @@ textarea {
   color: red;
   cursor: pointer;
 }
+
+button[disabled=""] {
+  background-color: gray;
+}

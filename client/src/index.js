@@ -1,15 +1,44 @@
 import React from 'react';
 import './index.css';
 import App from './components/App';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import {ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache} from '@apollo/client'
 import * as ReactDOMClient from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import SignUp from './components/Auth/SignUp';
 import SignIn from './components/Auth/SignIn';
+import { getCredentials } from './common';
+
+const httpLink = new HttpLink({ uri: 'http://127.0.0.1:4444/graphql/' });
+const authLink = new ApolloLink((operation, forward) => {
+  const token = getCredentials();
+  operation.setContext({
+    headers: {
+      authorization: token ? `Bearer ${token}` : ''
+    }
+  });
+
+  return forward(operation);
+});
 
 const client = new ApolloClient({
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
-  uri: 'http://127.0.0.1:4444/graphql/',
+  fetchOptions: {
+    credentials: 'include',
+  },
+  request: (operation) => {
+    console.log('operation: ', operation);
+    operation.setContext({
+      headers: {
+        authorization: getCredentials(),
+      }
+    });
+  },
+  onError: ({ networkError }) => {
+    if (networkError) {
+      console.log('Network error', networkError);
+    }
+  }
 });
 
 const RoutingRoot = () => (

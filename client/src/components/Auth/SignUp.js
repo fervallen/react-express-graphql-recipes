@@ -2,6 +2,7 @@ import React from 'react';
 import { Mutation } from '@apollo/client/react/components';
 import { SIGNUP_USER } from '../../queries';
 import Error from '../Error';
+import { setCredentials } from '../../common';
 
 class SignUp extends React.Component {
   initialState = {
@@ -9,7 +10,7 @@ class SignUp extends React.Component {
     email: '',
     password: '',
     passwordConfirmation: '',
-    error: {message: 123},
+    error: null,
   };
   state = this.initialState;
 
@@ -27,9 +28,16 @@ class SignUp extends React.Component {
   handleSubmit = (event, signUpUser) => {
     event.preventDefault();
     signUpUser().then((data) => {
+      setCredentials(data.signinUser.token);
       this.clearState();
     }).catch((error) => {
-      this.setState({ error });
+      this.setState({
+        username: this.state.username,
+        email: this.state.email,
+        password: this.state.password,
+        passwordConfirmation: this.state.passwordConfirmation,
+        error
+      });
     });
   };
 
@@ -37,7 +45,7 @@ class SignUp extends React.Component {
     const { username, email, password, passwordConfirmation } = this.state;
     const validateEmail = (email) => {
       return email.match(
-        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
     };
 
@@ -84,7 +92,7 @@ class SignUp extends React.Component {
                   value={passwordConfirmation}
                   onChange={this.handleChange}
                 />
-                <button type="submit" disabled={loading || !this.isFormValid()} className="button-primary">Submit</button>
+                <button type="submit" disabled={(loading && !error) || !this.isFormValid()} className="button-primary">Submit</button>
                 {error && <Error error={error} />}
               </form>
             );

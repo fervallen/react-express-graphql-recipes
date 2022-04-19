@@ -11,6 +11,7 @@ const { makeExecutableSchema } = require('graphql-tools');
 
 const { typeDefs } = require('./schema');
 const { resolvers } = require('./resolvers');
+const {response} = require('express');
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -25,6 +26,12 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+
+app.use(async (request, response, next) => {
+  const token = request.headers['authorization'];
+  next();
+})
+
 app.use('/graphql', bodyParser.json(), graphqlExpress({
   schema,
   context: {

@@ -1,5 +1,6 @@
 const Recipe = require('./models/Recipe');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const createToken = (user, secret, expiresIn) => {
   const { username, email } = user;
@@ -30,6 +31,20 @@ exports.resolvers = {
       }).save();
     },
 
+    signinUser: async (root, { username, password }, { User }) => {
+      const user = await User.findOne({ username });
+      let isPasswordCorrect = false;
+      if (user) {
+        isPasswordCorrect = await bcrypt.compare(password, user.password);
+      }
+
+      if (!user || !isPasswordCorrect) {
+        throw new Error('Incorrect username or password');
+      }
+
+      return { token: createToken(user, process.env.SECRET, '1hr')}
+    },
+
     signupUser: async (root, { username, email, password }, { User }) => {
       const user = await User.findOne({ username });
       if (user) {
@@ -43,6 +58,6 @@ exports.resolvers = {
       }).save();
 
       return { token: createToken(newUser, process.env.SECRET, '1hr')}
-    }
+    },
   }
 };
