@@ -11,7 +11,7 @@ const { makeExecutableSchema } = require('graphql-tools');
 
 const { typeDefs } = require('./schema');
 const { resolvers } = require('./resolvers');
-const {response} = require('express');
+const jwt = require('jsonwebtoken');
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -29,16 +29,24 @@ app.use(cors(corsOptions));
 
 app.use(async (request, response, next) => {
   const token = request.headers['authorization'];
+  if (token) {
+    try {
+      request.currentUser = await jwt.verify(token, process.env.SECRET);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   next();
 })
 
-app.use('/graphql', bodyParser.json(), graphqlExpress({
+app.use('/graphql', bodyParser.json(), graphqlExpress(({ currentUser }) => ({
   schema,
   context: {
     Recipe,
     User,
+    currentUser
   }
-}));
+})));
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 

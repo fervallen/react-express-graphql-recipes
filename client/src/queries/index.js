@@ -13,6 +13,16 @@ export const GET_ALL_QUERIES = gql`
   }
 `;
 
+export const GET_CURRENT_USER = gql`
+  query {
+    getCurrentUser {
+      username,
+      joinDate,
+      email
+    }
+  }
+`;
+
 
 export const SIGN_IN_USER = gql`
   mutation(

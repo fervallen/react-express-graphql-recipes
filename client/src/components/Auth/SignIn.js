@@ -3,6 +3,7 @@ import { Mutation } from '@apollo/client/react/components';
 import { SIGN_IN_USER } from '../../queries';
 import Error from '../Error';
 import { setCredentials } from '../../common';
+import { withRouter } from '../withRouter';
 
 class signIn extends React.Component {
   initialState = {
@@ -25,10 +26,10 @@ class signIn extends React.Component {
 
   handleSubmit = (event, signInUser) => {
     event.preventDefault();
-    signInUser().then(({ data }) => {
+    signInUser().then(async ({ data }) => {
       setCredentials(data.signinUser.token);
+      await this.props.refetch();
       this.clearState();
-
     }).catch((error) => {
       this.setState({
         username: this.state.username,
@@ -36,6 +37,7 @@ class signIn extends React.Component {
         error
       });
     });
+    this.props.navigate('/');
   };
 
   isFormValid = () => {
@@ -80,4 +82,4 @@ class signIn extends React.Component {
   }
 }
 
-export default signIn;
+export default withRouter(signIn);

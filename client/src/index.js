@@ -7,15 +7,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import SignUp from './components/Auth/SignUp';
 import SignIn from './components/Auth/SignIn';
 import { getCredentials } from './common';
+import withSession from './components/withSession';
 
 const httpLink = new HttpLink({ uri: 'http://127.0.0.1:4444/graphql/' });
 const authLink = new ApolloLink((operation, forward) => {
   const token = getCredentials();
-  operation.setContext({
-    headers: {
-      authorization: token ? `Bearer ${token}` : ''
-    }
-  });
+  operation.setContext({ headers: { authorization: token } });
 
   return forward(operation);
 });
@@ -41,21 +38,23 @@ const client = new ApolloClient({
   }
 });
 
-const RoutingRoot = () => (
+const RoutingRoot = ({ refetch }) => (
   <Router>
     <Routes>
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/signin" element={<SignIn refetch={refetch} />}  />
+      <Route path="/signup" element={<SignUp refetch={refetch} />} />
       <Route path="*" exact element={<App />} />
     </Routes>
   </Router>
 );
 
+const RoutingRootWithSession = withSession(RoutingRoot);
+
 const root = ReactDOMClient.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <RoutingRoot />
+      <RoutingRootWithSession />
     </ApolloProvider>
   </React.StrictMode>,
 );
