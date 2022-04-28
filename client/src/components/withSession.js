@@ -9,10 +9,8 @@ const withSession = Component => (props) => (
         return null;
       }
 
-      console.log('Current user: ', data.getCurrentUser);
-
       return (
-        <Component {...props} refetch={refetch} />
+        <Component {...props} refetch={refetch} session={data.getCurrentUser} />
       );
     }}
   </Query>

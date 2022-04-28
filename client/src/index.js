@@ -8,6 +8,10 @@ import SignUp from './components/Auth/SignUp';
 import SignIn from './components/Auth/SignIn';
 import { getCredentials } from './common';
 import withSession from './components/withSession';
+import Navbar from './components/Navbar';
+import Search from './components/Search';
+import AddRecipe from './components/AddRecipe';
+import Profile from './components/Profile';
 
 const httpLink = new HttpLink({ uri: 'http://127.0.0.1:4444/graphql/' });
 const authLink = new ApolloLink((operation, forward) => {
@@ -38,9 +42,13 @@ const client = new ApolloClient({
   }
 });
 
-const RoutingRoot = ({ refetch }) => (
+const RoutingRoot = ({ refetch, session }) => (
   <Router>
+    <Navbar session={session} />
     <Routes>
+      <Route path="/search" element={<Search />}  />
+      <Route path="/recipe/add" element={<AddRecipe />}  />
+      <Route path="/profile" element={<Profile />}  />
       <Route path="/signin" element={<SignIn refetch={refetch} />}  />
       <Route path="/signup" element={<SignUp refetch={refetch} />} />
       <Route path="*" exact element={<App />} />

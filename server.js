@@ -33,7 +33,7 @@ app.use(async (request, response, next) => {
     try {
       request.currentUser = await jwt.verify(token, process.env.SECRET);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   }
   next();

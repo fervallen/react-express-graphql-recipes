@@ -8,5 +8,4 @@ export const getCredentials = () => {
 
 export const logout = () => {
   localStorage.removeItem('token');
-  window.location.url('/');
 }
