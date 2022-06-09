@@ -1,11 +1,12 @@
 import './App.css';
-import { GET_ALL_QUERIES } from '../queries';
+import { GET_ALL_RECIPES } from '../queries';
 import { Query } from '@apollo/client/react/components';
+import RecipeItem from './Recipe/RecipeItem';
 
 const App = () => (
   <div className="App">
     <h1>Home</h1>
-    <Query query={GET_ALL_QUERIES}>
+    <Query query={GET_ALL_RECIPES}>
       {({ data, loading, error}) => {
         if (loading) {
           return <div>Loading</div>;
@@ -13,10 +14,13 @@ const App = () => (
         if (error) {
           return <div>{error.toString()}</div>;
         }
-        console.log('Data: ', data);
 
         return (
-          <p>Recipes</p>
+          <ul>
+            {data.getAllRecipes.map((recipe) => (
+              <RecipeItem key={recipe._id} {...recipe} />
+            ))}
+          </ul>
         );
       }}
     </Query>
