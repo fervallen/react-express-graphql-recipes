@@ -7,7 +7,7 @@ const NavbarAuth = ({ session }) => (
     <ul>
       <li><NavLink to="/">Home</NavLink></li>
       <li><NavLink to="/search" >Search</NavLink></li>
-      <li><NavLink to="/recipes/add" >Add Recipe</NavLink></li>
+      <li><NavLink to="/recipe/add" >Add Recipe</NavLink></li>
       <li><NavLink to="/profile" >Profile</NavLink></li>
       <li><SignOut /></li>
     </ul>

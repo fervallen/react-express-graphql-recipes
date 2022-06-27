@@ -48,7 +48,7 @@ const RoutingRoot = ({ refetch, session }) => (
     <Navbar session={session} />
     <Routes>
       <Route path="/search" element={<Search />}  />
-      <Route path="/recipe/add" element={<AddRecipe />}  />
+      <Route path="/recipe/add" element={<AddRecipe session={session} />}  />
       <Route path="/recipes/:_id" element={<RecipePage />}  />
       <Route path="/profile" element={<Profile />}  />
       <Route path="/signin" element={<SignIn refetch={refetch} />}  />

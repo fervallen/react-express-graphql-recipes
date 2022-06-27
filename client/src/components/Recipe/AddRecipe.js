@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
-import {setCredentials} from '../../common';
+import { Mutation } from '@apollo/client/react/components';
+import {ADD_RECIPE, GET_ALL_RECIPES} from '../../queries';
+import Error from '../Error';
+import { withRouter } from '../withRouter';
 
 class AddRecipe extends Component {
   initialState = {
@@ -8,7 +11,13 @@ class AddRecipe extends Component {
     description: '',
     instructions: '',
     username: '',
+    error: null,
   };
+
+  componentDidMount() {
+    this.setState({ username: this.props.session.username });
+  }
+
   state = this.initialState;
 
   handleChange = (event) => {
@@ -18,60 +27,86 @@ class AddRecipe extends Component {
     })
   };
 
+  updateCache = (cache, { data: { addRecipe } }) => {
+    const { getAllRecipes } = cache.readQuery({ query: GET_ALL_RECIPES });
+    cache.writeQuery({
+      query: GET_ALL_RECIPES,
+      data: {
+        getAllRecipes: [...getAllRecipes, addRecipe],
+      },
+    });
+  };
+
   clearState = () => {
     this.setState(this.initialState);
+    this.setState({ username: this.props.session.username });
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = (event, addRecipe) => {
     event.preventDefault();
-    // signInUser().then(async ({ data }) => {
-    //   await this.props.refetch();
-    //   this.clearState();
-    // }).catch((error) => {
-    //   this.setState({
-    //     error
-    //   });
-    // });
-    // this.props.navigate('/');
+    addRecipe().then(async ({ data }) => {
+      this.clearState();
+      this.props.navigate('/recipes/' + data.addRecipe._id);
+    }).catch((error) => {
+      this.setState({
+        error
+      });
+    });
   };
 
   isFormValid = () => {
-    return true;
+    return this.state.name &&
+      this.state.username &&
+      this.state.name &&
+      this.state.category &&
+      this.state.instructions &&
+      this.state.description;
   };
 
   render() {
-    const { name, category, description, instructions } = this.state;
+    const { name, category, description, instructions, username, error } = this.state;
 
     return (
       <div className="App">
         <h2 className="App">Add Recipe</h2>
-        <form className="form">
-          <input type="text" name="name" placeholder="Recipe name" onChange={this.handleChange} value={name} />
-          <select name="category" onChange={this.handleChange} value={category}>
-            <option value="Breakfast">Breakfast</option>
-            <option value="Lunch">Lunch</option>
-            <option value="Dinner">Dinner</option>
-            <option value="Snack">Snack</option>
-            <option value="Dessert">Dessert</option>
-          </select>
-          <input
-            type="text"
-            name="description"
-            placeholder="Add description"
-            onChange={this.handleChange}
-            value={description}
-          />
-          <textarea
-            name="instructions"
-            placeholder="Add instructions"
-            onChange={this.handleChange}
-            value={instructions}
-          ></textarea>
-          <button type="submit" className="button-primary">Submit</button>
-        </form>
+        <Mutation
+          mutation={ADD_RECIPE}
+          variables={{ name, category, description, instructions, username }}
+          update={this.updateCache}
+        >
+          {(addRecipe, { data, loading }) => {
+            return (
+              <form className="form" onSubmit={(event) => this.handleSubmit(event, addRecipe)}>
+                <input type="text" name="name" placeholder="Recipe name" onChange={this.handleChange} value={name} />
+                <select name="category" onChange={this.handleChange} value={category}>
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                  <option value="Snack">Snack</option>
+                  <option value="Dessert">Dessert</option>
+                </select>
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Add description"
+                  onChange={this.handleChange}
+                  value={description}
+                />
+                <textarea
+                  name="instructions"
+                  placeholder="Add instructions"
+                  onChange={this.handleChange}
+                  value={instructions}
+                ></textarea>
+                <button type="submit" disabled={!this.isFormValid()} className="button-primary">Submit</button>
+                {error && <Error error={error} />}
+              </form>
+            );
+          }}
+        </Mutation>
       </div>
     );
   }
 }
 
-export default AddRecipe;
+export default withRouter(AddRecipe);

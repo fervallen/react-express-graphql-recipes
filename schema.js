@@ -31,11 +31,11 @@ type Token {
 
 type Mutation {
   addRecipe(
-    _id: ID
     name: String!
     category: String!
     description: String!
     instructions: String!
+    username: String!
   ): Recipe
   
   signinUser(
