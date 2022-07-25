@@ -32,10 +32,6 @@ textarea {
   font-size: 1.2rem;
 }
 
-.active {
-  font-weight: bold;
-}
-
 .form {
   display: flex;
   align-items: center;
@@ -50,4 +46,33 @@ textarea {
 
 button[disabled=""] {
   background-color: gray;
+}
+
+.recipe {
+  text-align: center;
+  background: whitesmoke;
+  padding: 1em;
+}
+
+.recipe h1 {
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.recipe-header > p {
+  margin: 0;
+}
+
+.like-button {
+  position: fixed;
+  right: 1em;
+  bottom: 1em;
+  font-size: 2rem;
+  background-color: #f15f79;
+  color: white !important;
+}
+
+.spinner {
+  text-align: center;
+  padding: 5em;
 }

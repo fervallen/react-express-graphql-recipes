@@ -7,11 +7,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import SignUp from './components/Auth/SignUp';
 import SignIn from './components/Auth/SignIn';
 import { getCredentials } from './common';
-import withSession from './components/withSession';
+import withSession from './components/HOC/withSession';
 import Navbar from './components/Navbar';
 import Search from './components/Recipe/Search';
 import AddRecipe from './components/Recipe/AddRecipe';
-import Profile from './components/Profile';
+import Profile from './components/Profile/Profile';
 import RecipePage from './components/Recipe/RecipePage';
 
 const httpLink = new HttpLink({ uri: 'http://127.0.0.1:4444/graphql/' });
@@ -29,7 +29,6 @@ const client = new ApolloClient({
     credentials: 'include',
   },
   request: (operation) => {
-    console.log('operation: ', operation);
     operation.setContext({
       headers: {
         authorization: getCredentials(),
@@ -50,9 +49,9 @@ const RoutingRoot = ({ refetch, session }) => (
       <Route path="/search" element={<Search />}  />
       <Route path="/recipe/add" element={<AddRecipe session={session} />}  />
       <Route path="/recipes/:_id" element={<RecipePage />}  />
-      <Route path="/profile" element={<Profile />}  />
       <Route path="/signin" element={<SignIn refetch={refetch} />}  />
       <Route path="/signup" element={<SignUp refetch={refetch} />} />
+      <Route path="/profile" element={<Profile session={session} />} />
       <Route path="*" exact element={<App />} />
     </Routes>
   </Router>

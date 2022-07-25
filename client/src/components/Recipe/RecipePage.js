@@ -1,7 +1,9 @@
 import React from 'react';
-import { withRouter } from '../withRouter';
+import { withRouter } from '../HOC/withRouter';
 import { GET_RECIPE } from '../../queries';
 import { Query } from '@apollo/client/react/components';
+import Spinner from '../Spinner';
+import LikeRecipe from './LikeRecipe';
 
 const RecipePage = (props) => {
   const { _id } = props.params;
@@ -10,7 +12,7 @@ const RecipePage = (props) => {
     <Query query={GET_RECIPE} variables={{ _id }}>
       {({ data, loading, error}) => {
         if (loading) {
-          return <div>Loading</div>;
+          return <Spinner />;
         }
         if (error) {
           return <div>{error.toString()}</div>;
@@ -24,7 +26,7 @@ const RecipePage = (props) => {
             <p>Instructions: { data.getRecipe.instructions }</p>
             <p>Likes: { data.getRecipe.likes }</p>
             <p>Created by: { data.getRecipe.username }</p>
-            <button>Like</button>
+            <LikeRecipe _id={_id} />
           </div>
         );
       }}

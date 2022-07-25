@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { withRouter } from '../withRouter';
+import { withRouter } from '../HOC/withRouter';
 import { logout } from '../../common';
 import { ApolloConsumer } from '@apollo/client';
 

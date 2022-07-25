@@ -2,6 +2,8 @@ import './App.css';
 import { GET_ALL_RECIPES } from '../queries';
 import { Query } from '@apollo/client/react/components';
 import RecipeItem from './Recipe/RecipeItem';
+import Error from './Error';
+import Spinner from './Spinner';
 
 const App = () => (
   <div className="App">
@@ -9,10 +11,10 @@ const App = () => (
     <Query query={GET_ALL_RECIPES}>
       {({ data, loading, error}) => {
         if (loading) {
-          return <div>Loading</div>;
+          return <Spinner/>;
         }
         if (error) {
-          return <div>{error.toString()}</div>;
+          return <Error>{error.toString()}</Error>;
         }
 
         return (

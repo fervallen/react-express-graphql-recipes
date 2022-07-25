@@ -1,6 +1,6 @@
 import React from 'react';
 import { Query } from '@apollo/client/react/components';
-import { GET_CURRENT_USER } from '../queries';
+import { GET_CURRENT_USER } from '../../queries';
 
 const withSession = Component => (props) => (
   <Query query={GET_CURRENT_USER}>
@@ -10,7 +10,7 @@ const withSession = Component => (props) => (
       }
 
       return (
-        <Component {...props} refetch={refetch} session={data.getCurrentUser} />
+        <Component {...props} refetch={refetch} session={data ? data.getCurrentUser : null} />
       );
     }}
   </Query>

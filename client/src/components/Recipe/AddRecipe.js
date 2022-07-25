@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import { Mutation } from '@apollo/client/react/components';
-import {ADD_RECIPE, GET_ALL_RECIPES} from '../../queries';
+import {ADD_RECIPE, GET_ALL_RECIPES, GET_USER_RECIPES} from '../../queries';
 import Error from '../Error';
-import { withRouter } from '../withRouter';
+import { withRouter } from '../HOC/withRouter';
+import Spinner from '../Spinner';
+import withAuth from '../HOC/withAuth';
 
 class AddRecipe extends Component {
   initialState = {
@@ -72,9 +74,14 @@ class AddRecipe extends Component {
         <Mutation
           mutation={ADD_RECIPE}
           variables={{ name, category, description, instructions, username }}
+          refetchQueries={() => [{ query: GET_USER_RECIPES, variables: { username } }]}
           update={this.updateCache}
         >
-          {(addRecipe, { data, loading }) => {
+          {(addRecipe, { loading }) => {
+            if (loading) {
+              return <Spinner />;
+            }
+
             return (
               <form className="form" onSubmit={(event) => this.handleSubmit(event, addRecipe)}>
                 <input type="text" name="name" placeholder="Recipe name" onChange={this.handleChange} value={name} />
@@ -109,4 +116,4 @@ class AddRecipe extends Component {
   }
 }
 
-export default withRouter(AddRecipe);
+export default withAuth(session => session && session.username)(withRouter(AddRecipe));

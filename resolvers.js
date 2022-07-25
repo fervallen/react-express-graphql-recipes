@@ -16,6 +16,17 @@ exports.resolvers = {
     getRecipe: async (root, { _id }, { Recipe }) => {
       return await Recipe.findOne({ _id });
     },
+    searchRecipes: async (root, { searchTerm }, { Recipe }) => {
+      if (searchTerm) {
+        return await Recipe.find({
+          $text: { $search: searchTerm }
+        }, {
+          score: { $meta: 'textScore' }
+        }).sort({ score: { $meta: 'textScore' } });
+      }
+
+      return await Recipe.find().sort({ likes: 'desc', createdDate: 'desc' });
+    },
     getCurrentUser: async (root, args, { currentUser, User }) => {
       if (!currentUser) {
         return null;
@@ -25,7 +36,10 @@ exports.resolvers = {
         path: 'favourites',
         model: 'Recipe',
       });
-    }
+    },
+    getUserRecipes: async (root, { username }, { Recipe }) => {
+      return await Recipe.find({username}).sort({ createdDate: 'desc' });
+    },
   },
 
   Mutation: {
@@ -44,7 +58,19 @@ exports.resolvers = {
         username
       }).save();
     },
+    likeRecipe: async (root, { _id, username }, { Recipe, User }) => {
+      await User.findOneAndUpdate({ username }, { $addToSet: { favourites: _id } });
 
+      return Recipe.findOneAndUpdate({ _id }, { $inc: { likes: 1 } });
+    },
+    unlikeRecipe: async (root, { _id, username }, { Recipe, User }) => {
+      await User.findOneAndUpdate({ username }, { $pull: { favourites: _id } });
+
+      return Recipe.findOneAndUpdate({ _id }, { $inc: { likes: -1 } });
+    },
+    deleteUserRecipe: async (root, { _id }, { Recipe }) => {
+      return Recipe.findOneAndRemove({_id});
+    },
     signinUser: async (root, { username, password }, { User }) => {
       const user = await User.findOne({ username });
       let isPasswordCorrect = false;

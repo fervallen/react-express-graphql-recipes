@@ -3,7 +3,7 @@ import { Mutation } from '@apollo/client/react/components';
 import { SIGNUP_USER } from '../../queries';
 import Error from '../Error';
 import { setCredentials } from '../../common';
-import { withRouter } from '../withRouter';
+import { withRouter } from '../HOC/withRouter';
 
 class SignUp extends React.Component {
   initialState = {
@@ -70,7 +70,7 @@ class SignUp extends React.Component {
           mutation={SIGNUP_USER}
           variables={{ username, email, password }}
         >
-          {(signupUser, { data, loading }) => {
+          {(signupUser, { loading }) => {
             return (
               <form className="form" onSubmit={(event) => this.handleSubmit(event, signupUser)}>
                 <input
